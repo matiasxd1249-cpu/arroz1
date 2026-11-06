@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search as SearchIcon, X, HardHat, Cog, Footprints, Forklift, BadgeCheck, Siren, DoorOpen, ShieldAlert, type LucideIcon } from 'lucide-react';
 import Encabezado from '@/components/Encabezado';
 import TarjetaRegla from '@/components/TarjetaRegla';
+import MapaEmpresa from '@/components/MapaEmpresa';
 import { REGLAS, Regla } from '@/data/reglas';
 
 const iconos: Record<string, LucideIcon> = {
@@ -21,6 +22,7 @@ interface GuiaProps {
 export default function Guia({ onAtras }: GuiaProps) {
   const [busqueda, setBusqueda] = useState('');
   const [seleccionada, setSeleccionada] = useState<Regla | null>(null);
+  const [vista, setVista] = useState<'normas' | 'mapa'>('normas');
 
   const q = busqueda.trim().toLowerCase();
   const filtradas = q
@@ -45,10 +47,42 @@ export default function Guia({ onAtras }: GuiaProps) {
     );
   }
 
+  const pestanas = (
+    <div className="grid grid-cols-2 gap-2 mb-4 p-1 rounded-2xl bg-white border-2 border-azulo/10">
+      <button
+        onClick={() => setVista('normas')}
+        aria-pressed={vista === 'normas'}
+        className={`min-h-[48px] rounded-xl text-sm font-bold ${vista === 'normas' ? 'bg-azulo text-white' : 'text-azulo hover:bg-hueso'}`}
+      >
+        Normas
+      </button>
+      <button
+        onClick={() => setVista('mapa')}
+        aria-pressed={vista === 'mapa'}
+        className={`min-h-[48px] rounded-xl text-sm font-bold ${vista === 'mapa' ? 'bg-azulo text-white' : 'text-azulo hover:bg-hueso'}`}
+      >
+        Mapa de la empresa
+      </button>
+    </div>
+  );
+
+  if (vista === 'mapa') {
+    return (
+      <>
+        <Encabezado titulo="Guía de bolsillo" onAtras={onAtras} acento="amarillo" />
+        <div className="px-4 pt-4 pb-4">
+          {pestanas}
+          <MapaEmpresa onVolver={() => setVista('normas')} />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Encabezado titulo="Guía de bolsillo" onAtras={onAtras} acento="amarillo" />
       <div className="px-4 pt-4 pb-4">
+        {pestanas}
         <div className="relative mb-4">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-azulo/40" />
           <input
